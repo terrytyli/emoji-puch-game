@@ -6,14 +6,14 @@ body {
 }
 
 .ring {
-  border-left: 2px solid white;
-  border-right: 2px solid white;
+  background: #111;
+  /* border-left: 3px solid #777; */
+  /* border-right: 3px solid #777; */
   height: 100vh;
   width: 100vw;
   max-width: 540px;
   position: relative;
   margin: 0 auto;
-  overflow: hidden;
 }
 
 @keyframes spin {
@@ -22,19 +22,6 @@ body {
   }
   to {
     transform: rotate(360deg);
-  }
-}
-
-@keyframes punch {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(6.5);
-  }
-
-  100% {
-    transform: scale(1);
   }
 }
 
@@ -47,7 +34,20 @@ body {
   }
 }
 
-.villian {
+@keyframes villain-punch {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(6.5);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.villain {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -55,14 +55,14 @@ body {
   transition: transform 0.8s;
 }
 .head {
-  margin-top: 2rem;
-  font-size: 8rem;
+  margin-top: 24px;
+  font-size: 112px;
 }
 
 .cogs {
   display: flex;
-  font-size: 3rem;
-  margin-top: -4rem;
+  font-size: 42px;
+  margin-top: -56px;
   justify-content: space-around;
 }
 
@@ -78,10 +78,35 @@ body {
   animation: spin-reverse 0.8s linear infinite;
 }
 
+.villain-life {
+  padding: 16px 12px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  position: relative;
+  z-index: 1;
+}
+.avatar {
+  font-size: 18px;
+  margin-right: 6px;
+}
+.life-bar {
+  width: 320px;
+  border-radius: 4px;
+  border: 1px solid #777;
+}
+
+.life-bar-life {
+  height: 8px;
+  border-radius: 4px;
+  background: #11b7ca;
+  transition: width 0.3s ease-in;
+}
 .fists {
   position: absolute;
   bottom: 0;
-  margin-bottom: 2rem;
+  margin-bottom: 28px;
   display: flex;
   justify-content: space-around;
   width: 100%;
@@ -90,22 +115,57 @@ body {
 .fist {
   background: none;
   border: none;
-  font-size: 3rem;
   border-radius: 50%;
-  border: 2px solid white;
-  padding: 0.5rem;
-  height: 6rem;
-  width: 6rem;
+  border: 3px solid #777;
+  padding: 8px;
+  height: 84px;
+  width: 84px;
   outline: none;
 }
 
 .fist:active {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
+.fist-left,
+.fist-right {
+  font-size: 42px;
+  display: inline-block;
+}
 .fist-left {
   transform: rotate(-90deg);
 }
 .fist-right {
   transform: rotate(90deg);
+}
+
+.punches {
+  position: relative;
+  top: 22px;
+  left: 30px;
+}
+
+@keyframes punch {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-1000px);
+  }
+}
+
+@keyframes punch-right {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-1000px);
+  }
+}
+
+.punch {
+  position: absolute;
+  animation: punch 2s;
 }

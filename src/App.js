@@ -1,84 +1,286 @@
-import React, { useState, useEffect } from "react";
-import "./styles.css";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  forwardRef,
+} from 'react'
+import './styles.css'
 
-const width = Math.min(window.innerWidth, 768);
-function Villian() {
-  const [leftOffset, setLeftOffset] = useState();
-  const [punchLeft, setPunchLeft] = useState();
-  const [punchRight, setPunchRight] = useState();
+const width = Math.min(window.innerWidth, 768)
+
+function VillainLife({ life }) {
+  return (
+    <div className="villain-life">
+      <span role="img" aria-label="avatar" className="avatar">
+        🤖
+      </span>
+      <div className="life-bar">
+        <div className="life-bar-life" style={{ width: `${life}%` }} />
+      </div>
+    </div>
+  )
+}
+const Villain = forwardRef((props, ref) => {
+  const [leftOffset, setLeftOffset] = useState()
+  const [villainPunchLeft, setVillainPunchLeft] = useState()
+  const [villainPunchRight, setVillainPunchRight] = useState()
+
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setLeftOffset((Math.random() * width) / 2);
-    }, 800);
-    return () => clearInterval(intervalId);
-  }, []);
+      setLeftOffset((Math.random() * width) / 2)
+    }, 800)
+    return () => clearInterval(intervalId)
+  }, [])
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (Math.random() > 0.5) {
-        setPunchLeft(true);
+        setVillainPunchLeft(true)
       } else {
-        setPunchLeft(false);
+        setVillainPunchLeft(false)
       }
-    }, 2000);
-    return () => clearInterval(intervalId);
-  }, []);
+    }, 1500)
+    return () => clearInterval(intervalId)
+  }, [])
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (Math.random() > 0.5) {
-        setPunchRight(true);
+        setVillainPunchRight(true)
       } else {
-        setPunchRight(false);
+        setVillainPunchRight(false)
       }
-    }, 2000);
-    return () => clearInterval(intervalId);
-  }, []);
+    }, 1500)
+    return () => clearInterval(intervalId)
+  }, [])
 
   return (
     <div
-      className="villian"
+      ref={ref}
+      className="villain"
       style={{
-        transform: `translateX(${leftOffset}px)`
+        transform: `translateX(${leftOffset}px)`,
       }}
     >
-      <div className="head">🤖</div>
+      <div className="head">
+        <span role="img" aria-label="head">
+          🤖
+        </span>
+      </div>
       <div className="cogs">
         <div
-          class="cog"
+          className="cog"
           style={{
-            animation: punchLeft && "punch 1s"
+            animation: villainPunchLeft && 'villain-punch 1s',
           }}
         >
-          <div className="cog-left">⚙</div>
+          <div className="cog-left">
+            <span role="img" aria-label="cog">
+              ⚙
+            </span>
+          </div>
         </div>
 
-        <div style={{ width: "2rem" }} />
+        <div style={{ width: '2rem' }} />
         <div
-          class="cog"
+          className="cog"
           style={{
-            animation: punchRight && "punch 1s"
+            animation: villainPunchRight && 'villain-punch 1s',
           }}
         >
-          <div className="cog cog-right">⚙</div>
+          <div className="cog cog-right">
+            <span role="img" aria-label="cog">
+              ⚙
+            </span>
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
+})
+
+function Punch({ villainRef, children, onMiss, onHit }) {
+  const ref = useRef()
+
+  useEffect(
+    () => {
+      const intervalId = setInterval(() => {
+        const { top, left, width, height } = ref.current.getBoundingClientRect()
+        const {
+          top: villainTop,
+          left: villainLeft,
+          width: villainWidth,
+          height: villainHeight,
+        } = villainRef.current.getBoundingClientRect()
+        if (
+          ((top >= villainTop && top - villainTop < villainHeight) ||
+            (top < villainTop && villainTop - top < height)) &&
+          ((left >= villainLeft && left - villainLeft < villainWidth) ||
+            (left < villainLeft && villainLeft - left < width))
+        ) {
+          onHit()
+        }
+        if (top < 0) {
+          onMiss()
+        }
+      }, 100)
+      return () => clearInterval(intervalId)
+    },
+    [onMiss, onHit, villainRef]
+  )
+
+  return (
+    <span ref={ref} className="punch">
+      {children}
+    </span>
+  )
 }
+
 export default function App() {
+  const [leftPunches, setLeftPunches] = useState([])
+  const [rightPunches, setRightPunches] = useState([])
+  const villainRef = useRef()
+  const [villainLife, setVillainLife] = useState(100)
+
+  const punchLeft = useCallback(
+    () => {
+      const id = Date.now()
+      const updated = [...leftPunches, { id }]
+      setLeftPunches(updated)
+    },
+    [leftPunches]
+  )
+
+  const punchRight = useCallback(
+    () => {
+      const id = Date.now()
+      setRightPunches([...rightPunches, { id }])
+    },
+    [rightPunches]
+  )
+
+  useEffect(
+    () => {
+      function keyPress(e) {
+        if (e.key === 'j') {
+          punchRight()
+        } else if (e.key === 'f') {
+          punchLeft()
+        }
+      }
+      window.addEventListener('keypress', keyPress)
+
+      return () => window.removeEventListener('keypress', keyPress)
+    },
+    [punchRight, punchLeft]
+  )
+
+  const removeLeftPunch = useCallback(
+    (id) => {
+      const updatedPunches = leftPunches.filter((lp) => {
+        return lp.id !== id
+      })
+      setLeftPunches(updatedPunches)
+    },
+    [leftPunches]
+  )
+
+  const removeRightPunch = useCallback(
+    (id) => {
+      const updatedPunches = rightPunches.filter((lp) => {
+        return lp.id !== id
+      })
+      setRightPunches(updatedPunches)
+    },
+    [rightPunches]
+  )
+
+  const handleHit = useCallback(
+    () => {
+      setVillainLife(villainLife - 1)
+    },
+    [villainLife]
+  )
+
+  const handleHitLeftPunch = useCallback(
+    (id) => {
+      removeLeftPunch(id)
+      handleHit()
+    },
+    [removeLeftPunch, handleHit]
+  )
+
+  const handleHitRightPunch = useCallback(
+    (id) => {
+      removeRightPunch(id)
+      handleHit()
+    },
+    [removeRightPunch, handleHit]
+  )
+
   return (
     <div className="ring">
-      <Villian />
-      {/* <div>👊</div> */}
+      <VillainLife life={villainLife} />
+      <Villain ref={villainRef} />
+
       <div className="fists">
-        <div className="fist-left">
-          <button className="fist">🤜</button>
+        <div>
+          <div className="punches">
+            {leftPunches.map((p) => {
+              return (
+                <Punch
+                  villainRef={villainRef}
+                  key={p.id}
+                  onMiss={() => removeLeftPunch(p.id)}
+                  onHit={() => handleHitLeftPunch(p.id)}
+                >
+                  <div className="fist-left">
+                    <span role="img" aria-label="fist-left">
+                      🤜
+                    </span>
+                  </div>
+                </Punch>
+              )
+            })}
+          </div>
+          <button onClick={punchLeft} className="fist">
+            <div className="fist-left">
+              <span role="img" aria-label="fist-left">
+                🤜
+              </span>
+            </div>
+          </button>
         </div>
-        <div className="fist-right">
-          <button className="fist">🤛</button>
+        <div>
+          <div className="punches">
+            {rightPunches.map((p) => {
+              return (
+                <Punch
+                  key={p.id}
+                  villainRef={villainRef}
+                  onMiss={() => removeRightPunch(p.id)}
+                  onHit={() => handleHitRightPunch(p.id)}
+                >
+                  <div className="fist-right" key={p.id}>
+                    <span role="img" aria-label="fist-right">
+                      🤛
+                    </span>
+                  </div>
+                </Punch>
+              )
+            })}
+          </div>
+
+          <button onClick={punchRight} className="fist">
+            <div className="fist-right">
+              <span role="img" aria-label="fist-right">
+                🤛
+              </span>
+            </div>
+          </button>
         </div>
       </div>
     </div>
-  );
+  )
 }
