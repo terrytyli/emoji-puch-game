@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import './styles.css'
 
-const width = Math.min(window.innerWidth, 768)
+const width = Math.min(window.innerWidth, 300)
 
 function VillainLife({ life }) {
   return (
@@ -21,7 +21,8 @@ function VillainLife({ life }) {
     </div>
   )
 }
-const Villain = forwardRef((props, ref) => {
+
+const Villain = forwardRef(({ life }, ref) => {
   const [leftOffset, setLeftOffset] = useState()
   const [villainPunchLeft, setVillainPunchLeft] = useState()
   const [villainPunchRight, setVillainPunchRight] = useState()
@@ -29,7 +30,7 @@ const Villain = forwardRef((props, ref) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setLeftOffset((Math.random() * width) / 2)
-    }, 800)
+    }, 600)
     return () => clearInterval(intervalId)
   }, [])
 
@@ -64,6 +65,7 @@ const Villain = forwardRef((props, ref) => {
       }}
     >
       <div className="head">
+        {life < 100 && <div className="flash" key={life} />}
         <span role="img" aria-label="head">
           🤖
         </span>
@@ -72,7 +74,7 @@ const Villain = forwardRef((props, ref) => {
         <div
           className="cog"
           style={{
-            animation: villainPunchLeft && 'villain-punch 1s',
+            animation: villainPunchLeft && 'villain-punch 1.2s',
           }}
         >
           <div className="cog-left">
@@ -86,7 +88,7 @@ const Villain = forwardRef((props, ref) => {
         <div
           className="cog"
           style={{
-            animation: villainPunchRight && 'villain-punch 1s',
+            animation: villainPunchRight && 'villain-punch 1.2s',
           }}
         >
           <div className="cog cog-right">
@@ -124,7 +126,7 @@ function Punch({ villainRef, children, onMiss, onHit }) {
         if (top < 0) {
           onMiss()
         }
-      }, 100)
+      }, 10)
       return () => clearInterval(intervalId)
     },
     [onMiss, onHit, villainRef]
@@ -198,7 +200,7 @@ export default function App() {
 
   const handleHit = useCallback(
     () => {
-      setVillainLife(villainLife - 1)
+      setVillainLife(villainLife - 2)
     },
     [villainLife]
   )
@@ -222,11 +224,11 @@ export default function App() {
   return (
     <div className="ring">
       <VillainLife life={villainLife} />
-      <Villain ref={villainRef} />
+      <Villain ref={villainRef} life={villainLife} />
 
       <div className="fists">
         <div>
-          <div className="punches">
+          <button onClick={punchLeft} className="fist">
             {leftPunches.map((p) => {
               return (
                 <Punch
@@ -243,8 +245,6 @@ export default function App() {
                 </Punch>
               )
             })}
-          </div>
-          <button onClick={punchLeft} className="fist">
             <div className="fist-left">
               <span role="img" aria-label="fist-left">
                 🤜
@@ -253,7 +253,7 @@ export default function App() {
           </button>
         </div>
         <div>
-          <div className="punches">
+          <button onClick={punchRight} className="fist">
             {rightPunches.map((p) => {
               return (
                 <Punch
@@ -270,9 +270,7 @@ export default function App() {
                 </Punch>
               )
             })}
-          </div>
 
-          <button onClick={punchRight} className="fist">
             <div className="fist-right">
               <span role="img" aria-label="fist-right">
                 🤛

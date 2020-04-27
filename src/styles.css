@@ -1,19 +1,19 @@
 body {
   font-family: sans-serif;
-  background: #222;
+  background: #111;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 .ring {
-  background: #111;
-  /* border-left: 3px solid #777; */
-  /* border-right: 3px solid #777; */
   height: 100vh;
   width: 100vw;
-  max-width: 540px;
+  max-width: 300px;
   position: relative;
   margin: 0 auto;
+  border-left: 2px solid white;
+  border-right: 2px solid white;
 }
 
 @keyframes spin {
@@ -51,12 +51,35 @@ body {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  transform: translateX(50%);
-  transition: transform 0.8s;
+  transition: transform 0.6s;
 }
+
+@keyframes flash {
+  0% {
+    background: rgba(255, 0, 0, 0.5);
+  }
+
+  100% {
+    background: rgba(255, 0, 0, 0);
+  }
+}
+
+.flash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 10%;
+  border-radius: 25%;
+  animation: flash 0.4s;
+  padding: 12px;
+  z-index: 1;
+}
+
 .head {
   margin-top: 24px;
-  font-size: 112px;
+  font-size: 80px;
+  position: relative;
 }
 
 .cogs {
@@ -79,7 +102,7 @@ body {
 }
 
 .villain-life {
-  padding: 16px 12px 0 12px;
+  padding: 32px 24px 0 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,12 +116,13 @@ body {
 }
 .life-bar {
   width: 320px;
-  border-radius: 4px;
-  border: 1px solid #777;
+  border-radius: 14px;
+  border: 2px solid #11b7ca;
+  height: 10px;
 }
 
 .life-bar-life {
-  height: 8px;
+  height: 100%;
   border-radius: 4px;
   background: #11b7ca;
   transition: width 0.3s ease-in;
@@ -113,10 +137,10 @@ body {
 }
 
 .fist {
-  background: none;
+  background: #111;
   border: none;
   border-radius: 50%;
-  border: 3px solid #777;
+  border: 3px solid white;
   padding: 8px;
   height: 84px;
   width: 84px;
@@ -140,9 +164,9 @@ body {
 }
 
 .punches {
-  position: relative;
+  /* position: relative;
   top: 22px;
-  left: 30px;
+  left: 30px; */
 }
 
 @keyframes punch {
@@ -161,11 +185,11 @@ body {
   }
 
   100% {
-    transform: translateX(-1000px);
+    transform: translateX(-1200px);
   }
 }
 
 .punch {
   position: absolute;
-  animation: punch 2s;
+  animation: punch 1s ease-in;
 }
