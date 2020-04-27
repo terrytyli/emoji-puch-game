@@ -231,7 +231,11 @@ export default function App() {
 
       {win && (
         <div className="win">
-          <div>💎</div>
+          <div>
+            <span role="img" aria-label="diamond">
+              💎
+            </span>
+          </div>
           <div>YOU WIN!</div>
           <button className="restart" onClick={restart}>
             Restart
