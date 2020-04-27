@@ -22,7 +22,7 @@ function VillainLife({ life }) {
   )
 }
 
-const Villain = forwardRef(({ life }, ref) => {
+const Villain = forwardRef(({ life, style }, ref) => {
   const [leftOffset, setLeftOffset] = useState()
   const [villainPunchLeft, setVillainPunchLeft] = useState()
   const [villainPunchRight, setVillainPunchRight] = useState()
@@ -62,6 +62,7 @@ const Villain = forwardRef(({ life }, ref) => {
       className="villain"
       style={{
         transform: `translateX(${leftOffset}px)`,
+        ...style,
       }}
     >
       <div className="head">
@@ -144,38 +145,26 @@ export default function App() {
   const [rightPunches, setRightPunches] = useState([])
   const villainRef = useRef()
   const [villainLife, setVillainLife] = useState(100)
-
+  const [win, setWin] = useState()
   const punchLeft = useCallback(
     () => {
-      const id = Date.now()
-      const updated = [...leftPunches, { id }]
-      setLeftPunches(updated)
+      if (villainLife > 0) {
+        const id = Date.now()
+        const updated = [...leftPunches, { id }]
+        setLeftPunches(updated)
+      }
     },
-    [leftPunches]
+    [leftPunches, villainLife]
   )
 
   const punchRight = useCallback(
     () => {
-      const id = Date.now()
-      setRightPunches([...rightPunches, { id }])
-    },
-    [rightPunches]
-  )
-
-  useEffect(
-    () => {
-      function keyPress(e) {
-        if (e.key === 'j') {
-          punchRight()
-        } else if (e.key === 'f') {
-          punchLeft()
-        }
+      if (villainLife > 0) {
+        const id = Date.now()
+        setRightPunches([...rightPunches, { id }])
       }
-      window.addEventListener('keypress', keyPress)
-
-      return () => window.removeEventListener('keypress', keyPress)
     },
-    [punchRight, punchLeft]
+    [rightPunches, villainLife]
   )
 
   const removeLeftPunch = useCallback(
@@ -200,9 +189,13 @@ export default function App() {
 
   const handleHit = useCallback(
     () => {
-      setVillainLife(villainLife - 2)
+      const updated = villainLife - 1
+      setVillainLife(updated)
+      if (updated <= 0) {
+        setTimeout(() => setWin(true), 800)
+      }
     },
-    [villainLife]
+    [villainLife, setWin]
   )
 
   const handleHitLeftPunch = useCallback(
@@ -221,11 +214,30 @@ export default function App() {
     [removeRightPunch, handleHit]
   )
 
+  function restart() {
+    setVillainLife(100)
+    setWin(false)
+  }
   return (
     <div className="ring">
       <VillainLife life={villainLife} />
-      <Villain ref={villainRef} life={villainLife} />
+      <Villain
+        ref={villainRef}
+        life={villainLife}
+        style={{
+          visibility: win && 'hidden',
+        }}
+      />
 
+      {win && (
+        <div className="win">
+          <div>💎</div>
+          <div>YOU WIN!</div>
+          <button className="restart" onClick={restart}>
+            Restart
+          </button>
+        </div>
+      )}
       <div className="fists">
         <div>
           <button onClick={punchLeft} className="fist">
