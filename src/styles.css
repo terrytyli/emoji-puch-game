@@ -79,6 +79,7 @@ body {
   max-width: 560px;
   width: 80%;
   height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: relative;
   margin: 0 auto;
   border-left: 2px solid white;
@@ -93,7 +94,6 @@ body {
   bottom: 10%;
   border-radius: 25%;
   animation: flash 0.4s;
-  z-index: 1;
 }
 
 .villain {
@@ -113,7 +113,7 @@ body {
   transition: transform 0.6s;
 }
 .head {
-  font-size: min(22vw, 120px);
+  font-size: 80px;
   position: relative;
 }
 
@@ -166,7 +166,7 @@ body {
 
 .fists {
   position: absolute;
-  bottom: 10%;
+  bottom: 5%;
   width: 100%;
   display: flex;
   justify-content: space-around;
@@ -211,6 +211,7 @@ body {
   font-size: 28px;
   font-weight: 500;
   text-align: center;
+  padding: 0 12px;
 }
 
 .trophy {
@@ -225,5 +226,5 @@ body {
   border: 2px solid white;
   padding: 8px 16px;
   border-radius: 6px;
-  margin-top: 5%;
+  margin-top: 10%;
 }

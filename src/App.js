@@ -6,6 +6,7 @@ import React, {
   forwardRef,
 } from 'react'
 import './styles.css'
+import { FixVH } from './FixVH'
 
 const Villain = forwardRef(({ ringRef, life }, ref) => {
   const [leftOffset, setLeftOffset] = useState()
@@ -305,6 +306,7 @@ export default function App() {
 
   return (
     <div className="ring" ref={ringRef}>
+      <FixVH />
       <VillainLife life={villainLife} />
       <Villain ref={villainRef} life={villainLife} ringRef={ringRef} />
 
