@@ -56,19 +56,13 @@
   10% {
     transform: rotate(90deg);
   }
-  20% {
-    transform: rotate(90deg) translateY(-30vw);
-  }
 
   30% {
-    transform: rotate(90deg) translateY(-30vw);
-  }
-  50% {
-    transform: rotate(90deg) translateY(-30vw) translateX(-10vh);
+    transform: rotate(90deg) translateX(-10vh);
   }
 
   100% {
-    transform: rotate(90deg) translateY(-30vw) translateX(100vh);
+    transform: rotate(90deg) translateX(100vh);
   }
 }
 
@@ -89,13 +83,6 @@ body {
   margin: 0 auto;
   border-left: 2px solid white;
   border-right: 2px solid white;
-}
-
-.timer {
-  color: #999;
-  display: flex;
-  justify-content: center;
-  font-size: 18px;
 }
 
 .flash {
@@ -119,6 +106,12 @@ body {
   transition: transform 0.6s;
 }
 
+.villain-inner {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.6s;
+}
 .head {
   font-size: 80px;
   position: relative;
@@ -213,14 +206,14 @@ body {
   animation: punch 1s ease-in;
 }
 
-.win {
+.message {
   color: white;
   font-size: 28px;
   font-weight: 500;
   text-align: center;
 }
 
-.diamond {
+.trophy {
   font-size: 56px;
 }
 
@@ -232,5 +225,5 @@ body {
   border: 2px solid white;
   padding: 8px 16px;
   border-radius: 6px;
-  margin-top: 12px;
+  margin-top: 5%;
 }
