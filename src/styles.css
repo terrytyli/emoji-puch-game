@@ -136,13 +136,13 @@ body {
 .life-bar {
   flex: 1;
   border-radius: 8px;
-  border: 2px solid #11b7ca;
+  border: 2px solid #25ecec;
   height: 10px;
 }
 
 .life-bar-life {
   height: 100%;
-  background: #11b7ca;
+  background: #25ecec;
   transition: width 0.3s ease-in;
 }
 

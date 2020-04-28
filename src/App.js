@@ -20,39 +20,45 @@ function VillainLife({ life }) {
   )
 }
 
-const Villain = forwardRef(({ life, style }, ref) => {
+const Villain = forwardRef(({ ringRef, life, style }, ref) => {
   const [leftOffset, setLeftOffset] = useState()
   const [villainPunchLeft, setVillainPunchLeft] = useState()
   const [villainPunchRight, setVillainPunchRight] = useState()
 
-  useEffect(() => {
-    const movingIntervalId = setInterval(() => {
-      const width = Math.min(window.innerWidth, 560)
-      setLeftOffset((Math.random() * width) / 2)
-    }, 600)
+  useEffect(
+    () => {
+      const movingIntervalId = setInterval(() => {
+        const width =
+          ringRef.current.getBoundingClientRect().width -
+          ref.current.getBoundingClientRect().width
 
-    const leftPunchIntervalId = setInterval(() => {
-      if (Math.random() > 0.5) {
-        setVillainPunchLeft(true)
-      } else {
-        setVillainPunchLeft(false)
+        setLeftOffset(Math.random() * width)
+      }, 600)
+
+      const leftPunchIntervalId = setInterval(() => {
+        if (Math.random() > 0.5) {
+          setVillainPunchLeft(true)
+        } else {
+          setVillainPunchLeft(false)
+        }
+      }, 1500)
+
+      const rightPunchIntervalId = setInterval(() => {
+        if (Math.random() > 0.5) {
+          setVillainPunchRight(true)
+        } else {
+          setVillainPunchRight(false)
+        }
+      }, 1500)
+
+      return () => {
+        clearInterval(movingIntervalId)
+        clearInterval(leftPunchIntervalId)
+        clearInterval(rightPunchIntervalId)
       }
-    }, 1500)
-
-    const rightPunchIntervalId = setInterval(() => {
-      if (Math.random() > 0.5) {
-        setVillainPunchRight(true)
-      } else {
-        setVillainPunchRight(false)
-      }
-    }, 1500)
-
-    return () => {
-      clearInterval(movingIntervalId)
-      clearInterval(leftPunchIntervalId)
-      clearInterval(rightPunchIntervalId)
-    }
-  }, [])
+    },
+    [ref]
+  )
 
   return (
     <div
@@ -139,9 +145,10 @@ function Punch({ villainRef, children, onMiss, onHit }) {
 }
 
 export default function App() {
+  const villainRef = useRef()
+  const ringRef = useRef()
   const [leftPunches, setLeftPunches] = useState([])
   const [rightPunches, setRightPunches] = useState([])
-  const villainRef = useRef()
   const [villainLife, setVillainLife] = useState(100)
 
   const [startTime, setStartTime] = useState(Date.now())
@@ -192,11 +199,11 @@ export default function App() {
 
   const handleHit = useCallback(
     () => {
-      const updated = villainLife - 1
+      const updated = villainLife - 2
       setVillainLife(updated)
       if (updated <= 0) {
         setEndTime(Date.now())
-        setTimeout(() => setWinMessageVisible(true), 500)
+        setTimeout(() => setWinMessageVisible(true), 300)
       }
     },
     [villainLife, setWinMessageVisible]
@@ -226,11 +233,12 @@ export default function App() {
   }
 
   return (
-    <div className="ring">
+    <div className="ring" ref={ringRef}>
       <VillainLife life={villainLife} />
       <Villain
         ref={villainRef}
         life={villainLife}
+        ringRef={ringRef}
         style={{
           visibility: winMessageVisible && 'hidden',
         }}
