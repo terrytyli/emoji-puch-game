@@ -7,20 +7,7 @@ import React, {
 } from 'react'
 import './styles.css'
 
-function VillainLife({ life }) {
-  return (
-    <div className="villain-life">
-      <span role="img" aria-label="avatar" className="avatar">
-        🤖
-      </span>
-      <div className="life-bar">
-        <div className="life-bar-life" style={{ width: `${life}%` }} />
-      </div>
-    </div>
-  )
-}
-
-const Villain = forwardRef(({ ringRef, life, style }, ref) => {
+const Villain = forwardRef(({ ringRef, life }, ref) => {
   const [leftOffset, setLeftOffset] = useState()
   const [villainPunchLeft, setVillainPunchLeft] = useState()
   const [villainPunchRight, setVillainPunchRight] = useState()
@@ -65,8 +52,8 @@ const Villain = forwardRef(({ ringRef, life, style }, ref) => {
       ref={ref}
       className="villain"
       style={{
-        transform: `translateX(${leftOffset}px)`,
-        ...style,
+        transform: life > 0 && `translateX(${leftOffset}px)`,
+        animation: life === 0 && 'dead 1.2s ease-out forwards',
       }}
     >
       <div className="head">
@@ -79,7 +66,7 @@ const Villain = forwardRef(({ ringRef, life, style }, ref) => {
         <div
           className="cog"
           style={{
-            animation: villainPunchLeft && 'villain-punch 1.2s',
+            animation: life > 0 && villainPunchLeft && 'villain-punch 1.2s',
           }}
         >
           <div className="cog-left">
@@ -93,7 +80,7 @@ const Villain = forwardRef(({ ringRef, life, style }, ref) => {
         <div
           className="cog"
           style={{
-            animation: villainPunchRight && 'villain-punch 1.2s',
+            animation: life > 0 && villainPunchRight && 'villain-punch 1.2s',
           }}
         >
           <div className="cog cog-right">
@@ -106,6 +93,19 @@ const Villain = forwardRef(({ ringRef, life, style }, ref) => {
     </div>
   )
 })
+
+function VillainLife({ life }) {
+  return (
+    <div className="villain-life">
+      <span role="img" aria-label="avatar" className="avatar">
+        🤖
+      </span>
+      <div className="life-bar">
+        <div className="life-bar-life" style={{ width: `${life}%` }} />
+      </div>
+    </div>
+  )
+}
 
 function Punch({ villainRef, children, onMiss, onHit }) {
   const ref = useRef()
@@ -144,6 +144,45 @@ function Punch({ villainRef, children, onMiss, onHit }) {
   )
 }
 
+function WinMessage({ seconds, onRestart }) {
+  return (
+    <div className="win">
+      <div>
+        <span role="img" aria-label="diamond" className="diamond">
+          💎
+        </span>
+      </div>
+      <div>You Win!</div>
+      <div>
+        You made it in {seconds}
+        s!
+      </div>
+      <button className="restart" onClick={onRestart}>
+        Restart
+      </button>
+    </div>
+  )
+}
+
+function FistLeft() {
+  return (
+    <div className="fist-left">
+      <span role="img" aria-label="fist-left">
+        🤜
+      </span>
+    </div>
+  )
+}
+
+function FistRight() {
+  return (
+    <div className="fist-right">
+      <span role="img" aria-label="fist-right">
+        🤛
+      </span>
+    </div>
+  )
+}
 export default function App() {
   const villainRef = useRef()
   const ringRef = useRef()
@@ -199,11 +238,13 @@ export default function App() {
 
   const handleHit = useCallback(
     () => {
-      const updated = villainLife - 2
-      setVillainLife(updated)
-      if (updated <= 0) {
-        setEndTime(Date.now())
-        setTimeout(() => setWinMessageVisible(true), 300)
+      if (villainLife > 0) {
+        const updated = villainLife - 1
+        setVillainLife(updated)
+        if (updated === 0) {
+          setEndTime(Date.now())
+          setTimeout(() => setWinMessageVisible(true), 1000)
+        }
       }
     },
     [villainLife, setWinMessageVisible]
@@ -235,88 +276,49 @@ export default function App() {
   return (
     <div className="ring" ref={ringRef}>
       <VillainLife life={villainLife} />
-      <Villain
-        ref={villainRef}
-        life={villainLife}
-        ringRef={ringRef}
-        style={{
-          visibility: winMessageVisible && 'hidden',
-        }}
-      />
+      <Villain ref={villainRef} life={villainLife} ringRef={ringRef} />
 
       {winMessageVisible && (
-        <div className="win">
-          <div>
-            <span role="img" aria-label="diamond">
-              💎
-            </span>
-          </div>
-          <div>YOU WIN!</div>
-          <div>
-            You made it in {((endTime - startTime) / 1000).toFixed(2)}
-            s!
-          </div>
-          <button className="restart" onClick={restart}>
-            Restart
-          </button>
-        </div>
+        <WinMessage
+          seconds={((endTime - startTime) / 1000).toFixed(2)}
+          onRestart={restart}
+        />
       )}
 
-      <div className="control">
-        <div className="fists">
-          <div>
-            <button onClick={punchLeft} className="fist">
-              {leftPunches.map((p) => {
-                return (
-                  <Punch
-                    villainRef={villainRef}
-                    key={p.id}
-                    onMiss={() => removeLeftPunch(p.id)}
-                    onHit={() => handleHitLeftPunch(p.id)}
-                  >
-                    <div className="fist-left">
-                      <span role="img" aria-label="fist-left">
-                        🤜
-                      </span>
-                    </div>
-                  </Punch>
-                )
-              })}
-              <div className="fist-left">
-                <span role="img" aria-label="fist-left">
-                  🤜
-                </span>
-              </div>
-            </button>
-          </div>
+      <div className="fists">
+        <button onClick={punchLeft} className="fist">
+          {leftPunches.map((p) => {
+            return (
+              <Punch
+                villainRef={villainRef}
+                key={p.id}
+                onMiss={() => removeLeftPunch(p.id)}
+                onHit={() => handleHitLeftPunch(p.id)}
+              >
+                <FistLeft />
+              </Punch>
+            )
+          })}
 
-          <div>
-            <button onClick={punchRight} className="fist">
-              {rightPunches.map((p) => {
-                return (
-                  <Punch
-                    key={p.id}
-                    villainRef={villainRef}
-                    onMiss={() => removeRightPunch(p.id)}
-                    onHit={() => handleHitRightPunch(p.id)}
-                  >
-                    <div className="fist-right" key={p.id}>
-                      <span role="img" aria-label="fist-right">
-                        🤛
-                      </span>
-                    </div>
-                  </Punch>
-                )
-              })}
+          <FistLeft />
+        </button>
 
-              <div className="fist-right">
-                <span role="img" aria-label="fist-right">
-                  🤛
-                </span>
-              </div>
-            </button>
-          </div>
-        </div>
+        <button onClick={punchRight} className="fist">
+          {rightPunches.map((p) => {
+            return (
+              <Punch
+                key={p.id}
+                villainRef={villainRef}
+                onMiss={() => removeRightPunch(p.id)}
+                onHit={() => handleHitRightPunch(p.id)}
+              >
+                <FistRight />
+              </Punch>
+            )
+          })}
+
+          <FistRight />
+        </button>
       </div>
     </div>
   )

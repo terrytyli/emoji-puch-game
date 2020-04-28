@@ -45,7 +45,27 @@
   }
 
   100% {
-    transform: translateY(-1200px);
+    transform: translateY(-100vh);
+  }
+}
+
+@keyframes dead {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(90deg);
+  }
+
+  20% {
+    transform: rotate(90deg) translateY(-30vw);
+  }
+  40% {
+    transform: rotate(90deg) translateY(-30vw) translateX(-10vh);
+  }
+
+  100% {
+    transform: rotate(90deg) translateY(-30vw) translateX(100vh);
   }
 }
 
@@ -88,6 +108,8 @@ body {
 
 .villain {
   margin-top: 48px;
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -146,12 +168,10 @@ body {
   transition: width 0.3s ease-in;
 }
 
-.control {
+.fists {
   position: absolute;
   bottom: 10%;
   width: 100%;
-}
-.fists {
   display: flex;
   justify-content: space-around;
 }
@@ -195,6 +215,10 @@ body {
   font-size: 28px;
   font-weight: 500;
   text-align: center;
+}
+
+.diamond {
+  font-size: 56px;
 }
 
 .restart {
