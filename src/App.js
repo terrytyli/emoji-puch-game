@@ -210,7 +210,11 @@ export default function App() {
   const [endTime, setEndTime] = useState()
 
   const [messageVisible, setMessageVisible] = useState()
-  const [record, setRecord] = useState(0)
+  const [isNewRecord, setIsNewRecord] = useState()
+  const [record, setRecord] = useState(() => {
+    const record = localStorage.getItem('record')
+    return record ? Number(record) : undefined
+  })
 
   const punchLeft = useCallback(
     () => {
@@ -259,12 +263,21 @@ export default function App() {
         const updated = villainLife - 5
         setVillainLife(updated)
         if (updated === 0) {
-          setEndTime(Date.now())
+          let et = Date.now()
+          setEndTime(et)
+          const lapse = et - startTime
+          if (!record || lapse < record) {
+            setIsNewRecord(true)
+            setRecord(lapse)
+            localStorage.setItem('record', lapse)
+          } else {
+            setIsNewRecord(false)
+          }
           setTimeout(() => setMessageVisible(true), 1000)
         }
       }
     },
-    [villainLife, setMessageVisible]
+    [villainLife, setMessageVisible, startTime, record]
   )
 
   const handleHitLeftPunch = useCallback(
@@ -288,7 +301,6 @@ export default function App() {
     setMessageVisible(false)
     setStartTime(Date.now())
     setEndTime(undefined)
-    setRecord(endTime - startTime)
   }
 
   return (
@@ -298,7 +310,7 @@ export default function App() {
 
       {messageVisible && (
         <Message
-          isNewRecord={!record || endTime - startTime < record}
+          isNewRecord={isNewRecord}
           seconds={((endTime - startTime) / 1000).toFixed(1)}
           onRestart={restart}
         />
