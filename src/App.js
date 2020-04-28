@@ -57,7 +57,7 @@ const Villain = forwardRef(({ ringRef, life, style }, ref) => {
         clearInterval(rightPunchIntervalId)
       }
     },
-    [ref]
+    [ref, ringRef]
   )
 
   return (
