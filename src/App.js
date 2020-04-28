@@ -53,7 +53,7 @@ const Villain = forwardRef(({ ringRef, life }, ref) => {
       className="villain"
       style={{
         transform: life > 0 && `translateX(${leftOffset}px)`,
-        animation: life === 0 && 'dead 1.2s ease-out forwards',
+        animation: life === 0 && 'dead 1.5s ease-out forwards',
       }}
     >
       <div className="head">
@@ -239,7 +239,7 @@ export default function App() {
   const handleHit = useCallback(
     () => {
       if (villainLife > 0) {
-        const updated = villainLife - 1
+        const updated = villainLife - 2
         setVillainLife(updated)
         if (updated === 0) {
           setEndTime(Date.now())

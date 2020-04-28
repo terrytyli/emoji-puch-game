@@ -56,11 +56,14 @@
   10% {
     transform: rotate(90deg);
   }
-
   20% {
     transform: rotate(90deg) translateY(-30vw);
   }
-  40% {
+
+  30% {
+    transform: rotate(90deg) translateY(-30vw);
+  }
+  50% {
     transform: rotate(90deg) translateY(-30vw) translateX(-10vh);
   }
 
