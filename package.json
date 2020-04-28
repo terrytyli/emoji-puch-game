@@ -1,7 +1,7 @@
 {
-  "name": "emoji-punch-game",
+  "name": "punch-it",
   "version": "1.0.0",
-  "description": "Emoji punch game created with React",
+  "description": "Punch it",
   "keywords": [
     "punch",
     "game",
