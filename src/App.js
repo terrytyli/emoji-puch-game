@@ -8,6 +8,18 @@ import React, {
 import './styles.css'
 import { FixVH } from './FixVH'
 
+import { Howl } from 'howler'
+import sound from './sound.mp3'
+
+const soundPlayer = new Howl({
+  src: [sound],
+  sprite: {
+    whoosh: [0, 400],
+    hit: [400, 300],
+    win: [700, 600],
+  },
+})
+
 var isTouchDevice = 'ontouchstart' in document.documentElement
 
 const Villain = forwardRef(({ ringRef, life }, ref) => {
@@ -224,6 +236,7 @@ export default function App() {
       if (villainLife > 0) {
         const id = Date.now()
         const updated = [...leftPunches, { id }]
+        soundPlayer.play('whoosh')
         setLeftPunches(updated)
       }
     },
@@ -234,6 +247,7 @@ export default function App() {
     () => {
       if (villainLife > 0) {
         const id = Date.now()
+        soundPlayer.play('whoosh')
         setRightPunches([...rightPunches, { id }])
       }
     },
@@ -265,6 +279,7 @@ export default function App() {
       if (villainLife > 0) {
         const updated = villainLife - 2
         setVillainLife(updated)
+        soundPlayer.play('hit')
         if (updated === 0) {
           let et = Date.now()
           setEndTime(et)
@@ -276,7 +291,10 @@ export default function App() {
           } else {
             setIsNewRecord(false)
           }
-          setTimeout(() => setMessageVisible(true), 1000)
+          setTimeout(() => {
+            setMessageVisible(true)
+            soundPlayer.play('win')
+          }, 1000)
         }
       }
     },
