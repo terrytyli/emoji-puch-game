@@ -8,6 +8,8 @@ import React, {
 import './styles.css'
 import { FixVH } from './FixVH'
 
+var isTouchDevice = 'ontouchstart' in document.documentElement
+
 const Villain = forwardRef(({ ringRef, life }, ref) => {
   const [leftOffset, setLeftOffset] = useState()
   const [villainPunchLeft, setVillainPunchLeft] = useState()
@@ -261,7 +263,7 @@ export default function App() {
   const handleHit = useCallback(
     () => {
       if (villainLife > 0) {
-        const updated = villainLife - 5
+        const updated = villainLife - 2
         setVillainLife(updated)
         if (updated === 0) {
           let et = Date.now()
@@ -319,7 +321,11 @@ export default function App() {
       )}
 
       <div className="fists">
-        <button onClick={punchLeft} className="fist">
+        <button
+          onTouchStart={isTouchDevice && punchLeft}
+          onClick={!isTouchDevice && punchLeft}
+          className="fist"
+        >
           {leftPunches.map((p) => {
             return (
               <Punch
@@ -336,7 +342,11 @@ export default function App() {
           <FistLeft />
         </button>
 
-        <button onClick={punchRight} className="fist">
+        <button
+          onTouchStart={isTouchDevice && punchRight}
+          onClick={!isTouchDevice && punchRight}
+          className="fist"
+        >
           {rightPunches.map((p) => {
             return (
               <Punch
